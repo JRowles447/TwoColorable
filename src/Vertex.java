@@ -14,7 +14,9 @@ public class Vertex {
 	// list of Integer ids to other vertices
 	ArrayList<Integer> edges; 
 	int color; 
-	boolean visited; 
+	boolean visited;
+	// previous vertex that produced this vertex in dfsColoring
+	int parent; 
 
 
 	public Vertex(int id, ArrayList<Integer> edges) { 
@@ -24,6 +26,7 @@ public class Vertex {
 		this.color = -1; 
 		// set visited to false
 		this.visited = false; 
+		this.parent = -1;
 	}
 
 	// return the Integer array list casted to an array of ints

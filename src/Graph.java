@@ -11,6 +11,10 @@ import java.util.*;
 public class Graph {
     public Graph(String filename) {
         Vertex[] vertices = parse_file(filename);
+        Vertex[] twoColored = dfs(vertices);
+        for(int i = 1; i < twoColored.length; i++){
+            System.out.println(twoColored[i].color);
+        }
     }
 
 
@@ -49,6 +53,48 @@ public class Graph {
             e.printStackTrace();
         }
         return vertices;
+    }
+
+    public Vertex[] dfs(Vertex[] vertices) {
+        // iterate over the nodes one by one
+        for(int i = 1; i < vertices.length; i++) { 
+            // if the vertex has not been colored, visit and dfs color
+            if(vertices[i].color == -1) {
+                dfsColor(vertices, i, 1, -1, true);
+            }
+        }
+        return vertices;
+    }
+
+    public void dfsColor(Vertex[] vertices, int vertexID, int color, int parent, boolean valid) {
+        vertices[vertexID].color = color; 
+        vertices[vertexID].parent = parent; 
+
+
+        // check if the coloring is valid with the adjacent nodes
+        // boolean valid = checkValid(vertices, vertexID
+        // might not be good idea cause run time complexity
+
+
+
+        int[] adjacent = vertices[vertexID].getEdges();
+        for(int i = 0; i < adjacent.length; i++) {
+            // check first if there is a coloring for adjacent vertex that matches parent
+            // this means the graph is NOT two colorable
+            if(vertices[adjacent[i]].color == vertices[vertexID].color) {
+                // invalidate valid and stop the traversal
+                valid = false; 
+                break;
+            }
+            // if the vertex does not have coloring, color it opposite parent!
+            else if (vertices[adjacent[i]].color == -1) {
+                dfsColor(vertices, adjacent[i], Math.abs(color-1), vertexID, valid);
+            }
+            // color is opposite
+            else { 
+                continue;
+            }
+        }
     }
 
     // // preform color-dfs on graph  
