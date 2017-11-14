@@ -16,9 +16,10 @@ public class Vertex {
 	int color; 
 	boolean visited; 
 
+
 	public Vertex(int id, ArrayList<Integer> edges) { 
 		this.id = id;
-		this.edges = edges;
+		this.edges = new ArrayList<Integer>();
 		// initialize color to -1, i.e. vertex is uncolored
 		this.color = -1; 
 		// set visited to false
@@ -33,5 +34,11 @@ public class Vertex {
 			castedEdges[i] = (int)(edges.get(i));
 		}
 		return castedEdges;
+	}
+
+	// add Integer edge to list of edges
+	public void addEdge(int edge) {
+		Integer newEdge = new Integer(edge);
+		this.edges.add(newEdge);
 	}
 }

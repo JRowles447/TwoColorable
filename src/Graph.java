@@ -10,7 +10,27 @@ import java.util.*;
 
 public class Graph {
     public Graph(String filename) {
-        // read_file(filename);
+        Vertex[] vertices = parse_file(filename);
+    }
+
+
+    // parse file and return an array of Vertex objects
+    public Vertex[] parse_file(String filename){
+        Vertex[] vertices = null;
+        try { 
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            int num_vertices = Integer.parseInt(reader.readLine());
+            vertices = new Vertex[num_vertices];
+            String line = null; 
+            while((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+        catch(Exception e) { 
+            e.printStackTrace();
+        }
+        return vertices;
+
     }
 }
 
