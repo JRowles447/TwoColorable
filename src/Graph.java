@@ -9,12 +9,17 @@ import java.lang.Math.*;
 import java.util.*;
 
 public class Graph {
+    boolean twoColorable = true; 
+
     public Graph(String filename) {
         Vertex[] vertices = parse_file(filename);
-        Vertex[] twoColored = dfs(vertices);
+        Vertex[] twoColored = vertices;
+
+        boolean result = dfs(twoColored);
         for(int i = 1; i < twoColored.length; i++){
             System.out.println(twoColored[i].color);
         }
+        System.out.println("Two Colorable: " + twoColorable);
     }
 
 
@@ -36,18 +41,14 @@ public class Graph {
                 String[] edge = line.split(" ");
                 int first = Integer.parseInt(edge[0]);
                 int second = Integer.parseInt(edge[1]);
+                
                 // add first vertex to second vertex adjacency list
                 vertices[first].edges.add(second);
 
                 // add second vertex to first vertex adjacency list
                 vertices[second].edges.add(first);
 
-                System.out.println(line);
             }
-            for(int i = 1; i < vertices.length; i++){
-                System.out.println(vertices[i].edges);
-            }
-
         }
         catch(Exception e) { 
             e.printStackTrace();
@@ -55,15 +56,21 @@ public class Graph {
         return vertices;
     }
 
-    public Vertex[] dfs(Vertex[] vertices) {
+    public boolean dfs(Vertex[] vertices) {
         // iterate over the nodes one by one
+        boolean valid = true;
         for(int i = 1; i < vertices.length; i++) { 
             // if the vertex has not been colored, visit and dfs color
-            if(vertices[i].color == -1) {
-                dfsColor(vertices, i, 1, -1, true);
+            if(valid && vertices[i].color == -1) {
+                dfsColor(vertices, i, 1, -1, valid);
+            }
+            if(!valid){
+                System.out.println("GETS TO DFS FAILURE");
+                return false; 
             }
         }
-        return vertices;
+        
+        return valid; 
     }
 
     public void dfsColor(Vertex[] vertices, int vertexID, int color, int parent, boolean valid) {
@@ -83,7 +90,8 @@ public class Graph {
             // this means the graph is NOT two colorable
             if(vertices[adjacent[i]].color == vertices[vertexID].color) {
                 // invalidate valid and stop the traversal
-                valid = false; 
+                System.out.println("BAD GRAPH FAILURE");
+                twoColorable = false; 
                 break;
             }
             // if the vertex does not have coloring, color it opposite parent!
