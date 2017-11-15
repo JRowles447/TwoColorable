@@ -11,7 +11,6 @@ import java.util.*;
 public class Graph {
     boolean twoColorable; 
     Vertex[] graph;
-    Vertex[] invalidSubstructure;
     // tracks the time so discovery and finish times can be determined
     int time; 
     int conflict_vert;
@@ -22,12 +21,11 @@ public class Graph {
         Vertex[] vertices = parse_file(filename);
         twoColorable = true;
         graph = vertices;
-        invalidSubstructure = null; 
 
         Vertex[] twoColored = vertices;
 
-        Vertex[] result = this.dfs();
-        
+        this.dfs(); 
+
         // set output file name
         String write = outputFile;
         
@@ -38,13 +36,12 @@ public class Graph {
 
             // write the coloring assignment to the file if the graph is two colorable
             if (twoColorable) { 
-                System.out.println("twoColorable");
-                for(int i = 1; i < result.length; i++) {
-                    if(result[i].color == 0) { 
-                        writer.write(result[i].id + ": " + "red\n");
+                for(int i = 1; i < graph.length; i++) {
+                    if(graph[i].color == 0) { 
+                        writer.write(graph[i].id + ": " + "red\n");
                     }
                     else {
-                        writer.write(result[i].id + ": " + "black\n");
+                        writer.write(graph[i].id + ": " + "black\n");
                     }
                 }
             }
@@ -56,7 +53,8 @@ public class Graph {
                     this.conflict_vert = this.root_vert;
                     this.root_vert = temp;
                 }
-                this.invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
+
+                Vertex[] invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
 
                 for(int i = 0; i < invalidSubstructure.length; i++){
                     writer.write(String.valueOf(invalidSubstructure[i].id));
@@ -119,32 +117,40 @@ public class Graph {
 
     /**
      * Performs depth first search on the graph, calling dfsColor helper function to visit children in depth 
-     * first search style. 
+     * first search style. Returns a vertex array with vertices colored if the graph is two colorable, otherwise
+     * returns a partial coloring.
      *
-     * @return  returns a vertex array with the two colored graph
+     * @return  Returns a vertex array with the two colored graph
      */
-    // returns the Vertex[] of colored graph or the invalid substructure of the graph
-    // (i.e. an odd cycle)
-    public Vertex[] dfs() {
+    public void dfs() {
         // initialize the start time for the search 
         time = 0;
-        // iterate over the nodes one by one
+        // iterate over the vertices one by one
         for(int i = 1; i < graph.length; i++) { 
             // if the vertex has not been colored, visit and dfs color
             if(twoColorable && graph[i].color == -1) {
-                dfsColor(i, 1, -1);
+                dfsColor(i, 1);
             }
         }
-        return this.graph; 
+        // return this.graph; 
     }
 
 
 
 
-    public void dfsColor(int vertexID, int color, int parent) {
+    /**
+     * Called from dfs, colors the vertex at vertexID in graph with color (color is passed as opposite from parent). 
+     * Checks adjacent vertices. Colors adjacent opposite color with recursive calls to dfsColor, or, if they are already colored, 
+     * check if opposite than current vertex. If there is a conflict, set global boolean, break from function. Operates on graph
+     * global variable.  
+     * 
+     * @param   vertexID is the id of the vertex in the graph to be colored. After coloring, the vertex's adjacency list is checked
+     *          to ensure valid graph (two colorable)
+     * @param   color is the int to make the vertex with 
+     */
+    public void dfsColor(int vertexID, int color) {
         time +=1;
         graph[vertexID].color = color; 
-        graph[vertexID].parent = parent; 
         graph[vertexID].discover_time = time;
 
         int[] adjacent = graph[vertexID].getEdges();
@@ -166,7 +172,7 @@ public class Graph {
             }
             // if the vertex does not have coloring, color it opposite parent!
             else if (graph[adjacent[i]].color == -1) {
-                dfsColor(adjacent[i], Math.abs(color-1), vertexID);
+                dfsColor(adjacent[i], Math.abs(color-1));
             }
             // color is opposite (and correct)
             else { 
@@ -181,8 +187,15 @@ public class Graph {
 
 
 
-
- // conflict vertex has root adjacent with same color, follow the parents to the root 
+    /**
+     * Uses the conflict and root vertices from the graph to return the invalid substructure of the graph (i.e. the odd 
+     * cycle). Works backwards using the discovery and finish times of vertices. 
+     *
+     * @param   conflict is the id of the vertex that was being colored/ checked in dfsColor routine that was adjacent to a vertex
+     *          of the same color. 
+     * @param   root is the id of the vertex adjacent to and the same color as conflict
+     * @reutrn  Return the Vertex array with ordering for the vertices in forward order of exploration from the "root" of the cycle
+     */ 
     public Vertex[] getSubstructure(int conflict, int root) {
         // Stores the Integer IDs for the path 
         ArrayList<Integer> path = new ArrayList<Integer>();
