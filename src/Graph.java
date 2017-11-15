@@ -12,9 +12,11 @@ public class Graph {
     boolean twoColorable; 
     Vertex[] graph;
     Vertex[] invalidSubstructure;
+    // tracks the time so discovery and finish times can be determined
     int time; 
     int conflict_vert;
     int root_vert;
+
 
     public Graph(String filename) {
         Vertex[] vertices = parse_file(filename);
@@ -27,6 +29,16 @@ public class Graph {
         Vertex[] result = this.dfs();
         
         System.out.println("Two Colorable: " + twoColorable);
+        if (twoColorable) { 
+            for(int i = 1; i < result.length; i++) {
+                if(result[i].color == 0) { 
+                    System.out.println(result[i].id + ": " + "red");
+                }
+                else {
+                    System.out.println(result[i].id + ": " + "black");
+                }
+            }
+        }
         if (!twoColorable) {
             // swap the search order
             if(graph[this.conflict_vert].discover_time < graph[this.root_vert].discover_time) {
@@ -37,7 +49,10 @@ public class Graph {
             this.invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
 
             for(int i = 0; i < invalidSubstructure.length; i++){
-                System.out.println(invalidSubstructure[i].id);
+                System.out.print(invalidSubstructure[i].id);
+                if(i != (invalidSubstructure.length -1)) {
+                    System.out.print(", ");
+                }
             }
         }
     }
@@ -45,7 +60,13 @@ public class Graph {
 
 
 
-
+    /**
+     * Parses an input file according to the prespecified format. The vertex array returned
+     * is the representation of the graph from the input file.  
+     *
+     * @param   filename  The name of the file to parse
+     * @return  A vertex array with initialized vertices and edges
+     */
     // parse file and return an array of Vertex objects
     public Vertex[] parse_file(String filename){
         Vertex[] vertices = null;
@@ -82,7 +103,12 @@ public class Graph {
 
 
 
-
+    /**
+     * Performs depth first search on the graph, calling dfsColor helper function to visit children in depth 
+     * first search style. 
+     *
+     * @return  returns a vertex array with the two colored graph
+     */
     // returns the Vertex[] of colored graph or the invalid substructure of the graph
     // (i.e. an odd cycle)
     public Vertex[] dfs() {
