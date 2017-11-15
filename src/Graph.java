@@ -26,10 +26,10 @@ public class Graph {
 
 
         Vertex[] result = this.dfs();
-        for(int i = 1; i < twoColored.length; i++){
-            System.out.println(twoColored[i].color);
-            System.out.println("Vertex " + i + " discoved at time " + twoColored[i].discover_time + " finished at time " + twoColored[i].finish_time);
-        }
+        // for(int i = 1; i < twoColored.length; i++){
+        //     System.out.println(twoColored[i].color);
+        //     System.out.println("Vertex " + i + " discoved at time " + twoColored[i].discover_time + " finished at time " + twoColored[i].finish_time);
+        // }
         System.out.println("Two Colorable: " + twoColorable);
         if (!twoColorable) {
             // swap the search order
@@ -39,7 +39,9 @@ public class Graph {
                 this.root_vert = temp;
             }
             this.invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
-
+            System.out.println(this.conflict_vert);
+            System.out.println(this.root_vert);
+            System.out.println();
             for(int i = 0; i < invalidSubstructure.length; i++){
                 System.out.println(invalidSubstructure[i].id);
             }
@@ -96,7 +98,7 @@ public class Graph {
         for(int i = 1; i < graph.length; i++) { 
             // if the vertex has not been colored, visit and dfs color
             if(twoColorable && graph[i].color == -1) {
-                System.out.println("Searching from vertex: " + i);
+                // System.out.println("Searching from vertex: " + i);
                 dfsColor(i, 1, -1);
             }
         }
@@ -140,7 +142,7 @@ public class Graph {
             }
             // if the vertex does not have coloring, color it opposite parent!
             else if (graph[adjacent[i]].color == -1) {
-                System.out.println("Exploring vertex: " + adjacent[i] + " from parent: " + vertexID);
+                // System.out.println("Exploring vertex: " + adjacent[i] + " from parent: " + vertexID);
                 dfsColor(adjacent[i], Math.abs(color-1), vertexID);
             }
             // color is opposite
@@ -163,9 +165,6 @@ public class Graph {
         // Stores the Integer IDs for the path 
         ArrayList<Integer> path = new ArrayList<Integer>();
         int curr = conflict;
-        // add vertices from path to list
-        System.out.println("Root: " + root);
-        System.out.println("Conflict: " + conflict);
 
         int root_dis = graph[root].discover_time;
         int root_fin = graph[root].finish_time;
@@ -174,35 +173,42 @@ public class Graph {
 
         // length of the subcycle
 
-        int iterations = (graph[conflict].finish_time - graph[conflict].discover_time - 1)/2;
-        System.out.println("finish: " + graph[conflict].finish_time + " discover_time: " + graph[conflict].discover_time);
-        System.out.println("Iterations: " + iterations);
-        iterations = 0;
+        boolean finished = false;
         path.add(conflict);
+
         // add check for the last vertex connected to conflict
-        while(iterations >= 0) {
-            int[] edges = graph[curr].getEdges();
+        int[] edges = graph[curr].getEdges();
+
+        while(!finished) {
+            System.out.println("curr now is " + curr);
+
             for(int i = 0; i < edges.length; i++) {
+
                 Vertex adjacent = graph[edges[i]];
-                System.out.println("Look at vertex: " + adjacent.id + " with dis_time " + adjacent.discover_time + " and finish_time " + adjacent.finish_time);
-                // System.out.println("Has dis_time " + adjacent.discover_time + " and finish_time " + adjacent.finish_time);
-                // System.out.println("Vertex 4 was discovered at " + graph[4].discover_time + " has id " + graph[4].id);
-                if(root_dis < adjacent.discover_time && adjacent.discover_time < con_dis) {
-                    System.out.println("Meets first *********************");
-                    System.out.println("con_fin " + con_fin);
-                    System.out.println("root_fin " + root_fin);
-                    System.out.println("adjacent_finish " + adjacent.finish_time);
-                    System.out.println("adjacent id " + adjacent.id);
+                System.out.println(Arrays.toString(edges));
+                System.out.println("curr is: " + curr);
+                if(adjacent.id == this.root_vert && curr != conflict && graph[curr].discover_time > adjacent.discover_time) {
+                    System.out.println("Root is: " + this.root_vert + " conflict is: " + this.conflict_vert);
+                    System.out.println("curr is: " + curr + " conflict is " + conflict);
+                    System.out.println("adjacent is: " + adjacent.id);
+                    System.out.println("adj disc_time " + adjacent.discover_time + " curr disc_time " + graph[curr].discover_time);
+                    finished = true;
+                    break;
+                }
+                if(adjacent.discover_time < graph[curr].discover_time && root_dis < adjacent.discover_time && adjacent.discover_time < con_dis) {
                     if(adjacent.finish_time > con_fin && adjacent.finish_time < root_fin) {
-                        curr = i;
-                        System.out.println();
-                        System.out.println("adding vertex: " + i + " to cycle nodes\n");
+                        System.out.println("curr was " + curr);
+                        curr = edges[i];
+
+                        System.out.println("adding vertex: " + edges[i] + " to cycle nodes");
+                        System.out.println("curr is " + curr);
+                        edges = graph[curr].getEdges();
+
                         path.add(new Integer(adjacent.id));
                         continue;
                     }
                 }
             }
-            iterations--;
         }
 
         path.add(root);
@@ -216,48 +222,4 @@ public class Graph {
         }
         return substructure;
     }
-
-    // // conflict vertex has root adjacent with same color, follow the parents to the root 
-    // public Vertex[] getSubstructure(int conflict, int root) {
-    //     // Stores the Integer IDs for the path 
-    //     ArrayList<Integer> path = new ArrayList<Integer>();
-    //     int curr = conflict;
-    //     // add vertices from path to list
-    //     System.out.println("Root: " + root);
-    //     System.out.println("Conflict: " + conflict);
-
-    //     // length of the subcycle
-
-    //     int iterations = (graph[conflict].finish_time - graph[conflict].discover_time - 1)/2;
-    //     System.out.println("finish: " + graph[conflict].finish_time + " discover_time: " + graph[conflict].discover_time);
-    //     System.out.println("Iterations: " + iterations);
-
-    //     // add check for the last vertex connected to conflict
-    //     while(iterations >= 0) {
-    //         int[] edges = graph[curr].getEdges();
-    //         for(int i = 0; i < edges.length; i
-    //             if(graph[root].discover_time++) {
-    //             Vertex adjacent = graph[i]; < adjacent.discover_time && adjacent.discover_time < graph[conflict].finish_time) {
-    //                 if(graph[conflict].discover_time < adjacent.finish_time && adjacent.finish_time < graph[root].finish_time){
-    //                     curr = i;
-    //                     System.out.println("adding vertex: " + i + " to cycle nodes");
-    //                     path.add(new Integer(i));
-    //                     continue;
-    //                 }
-    //             }
-    //         }
-    //         iterations--;
-    //     }
-
-    //     path.add(root);
-
-    //     // stores vertex substructure that proves a graph is not two colorable
-    //     Vertex[] substructure = new Vertex[(path.size())];
-
-    //     // populate the path with Vertex objects
-    //     for(int i = 0; i < substructure.length; i++) {
-    //         substructure[i] = graph[(int)(path.get(i))];
-    //     }
-    //     return substructure;
-    // }
 }
