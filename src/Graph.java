@@ -18,7 +18,7 @@ public class Graph {
     int root_vert;
 
 
-    public Graph(String filename) {
+    public Graph(String filename, String outputFile) {
         Vertex[] vertices = parse_file(filename);
         twoColorable = true;
         graph = vertices;
@@ -28,35 +28,49 @@ public class Graph {
 
         Vertex[] result = this.dfs();
         
-        System.out.println("Two Colorable: " + twoColorable);
-        if (twoColorable) { 
-            for(int i = 1; i < result.length; i++) {
-                if(result[i].color == 0) { 
-                    System.out.println(result[i].id + ": " + "red");
-                }
-                else {
-                    System.out.println(result[i].id + ": " + "black");
-                }
-            }
-        }
-        if (!twoColorable) {
-            // swap the search order
-            if(graph[this.conflict_vert].discover_time < graph[this.root_vert].discover_time) {
-                int temp = this.conflict_vert;
-                this.conflict_vert = this.root_vert;
-                this.root_vert = temp;
-            }
-            this.invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
+        // set output file name
+        String write = outputFile;
+        
+        // write results to output file
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(write));
+            writer.write("Two Colorable: " + twoColorable + "\n");
 
-            for(int i = 0; i < invalidSubstructure.length; i++){
-                System.out.print(invalidSubstructure[i].id);
-                if(i != (invalidSubstructure.length -1)) {
-                    System.out.print(", ");
+            // write the coloring assignment to the file if the graph is two colorable
+            if (twoColorable) { 
+                System.out.println("twoColorable");
+                for(int i = 1; i < result.length; i++) {
+                    if(result[i].color == 0) { 
+                        writer.write(result[i].id + ": " + "red\n");
+                    }
+                    else {
+                        writer.write(result[i].id + ": " + "black\n");
+                    }
                 }
             }
+            // else write the cycle of vertices that invalidates 
+            else {
+                // swap the search order
+                if(graph[this.conflict_vert].discover_time < graph[this.root_vert].discover_time) {
+                    int temp = this.conflict_vert;
+                    this.conflict_vert = this.root_vert;
+                    this.root_vert = temp;
+                }
+                this.invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
+
+                for(int i = 0; i < invalidSubstructure.length; i++){
+                    writer.write(String.valueOf(invalidSubstructure[i].id));
+                    if(i != (invalidSubstructure.length -1)) {
+                        writer.write(", ");
+                    }
+                }
+            }
+            writer.close();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
         }
     }
-
 
 
 
