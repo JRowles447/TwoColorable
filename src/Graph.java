@@ -9,17 +9,29 @@ import java.lang.Math.*;
 import java.util.*;
 
 public class Graph {
-    boolean twoColorable = true; 
+    boolean twoColorable; 
+    Vertex[] graph;
+    Vertex[] invalidSubstructure;
 
     public Graph(String filename) {
         Vertex[] vertices = parse_file(filename);
+        twoColorable = true;
+        graph = vertices;
+        invalidSubstructure = null; 
+
         Vertex[] twoColored = vertices;
 
-        boolean result = dfs(twoColored);
+
+        Vertex[] result = this.dfs();
         for(int i = 1; i < twoColored.length; i++){
             System.out.println(twoColored[i].color);
         }
         System.out.println("Two Colorable: " + twoColorable);
+        if (!twoColorable){
+            for(int i = 0; i < invalidSubstructure.length; i++){
+                System.out.println(invalidSubstructure[i].id);
+            }
+        }
     }
 
 
@@ -56,26 +68,27 @@ public class Graph {
         return vertices;
     }
 
-    public boolean dfs(Vertex[] vertices) {
+    // returns the Vertex[] of colored graph or the invalid substructure of the graph
+    // (i.e. an odd cycle)
+    public Vertex[] dfs() {
         // iterate over the nodes one by one
-        boolean valid = true;
-        for(int i = 1; i < vertices.length; i++) { 
+        for(int i = 1; i < graph.length; i++) { 
             // if the vertex has not been colored, visit and dfs color
-            if(valid && vertices[i].color == -1) {
-                dfsColor(vertices, i, 1, -1, valid);
+            if(twoColorable && graph[i].color == -1) {
+                System.out.println("Searching from vertex: " + i);
+                dfsColor(i, 1, -1);
             }
-            if(!valid){
-                System.out.println("GETS TO DFS FAILURE");
-                return false; 
-            }
+            // if(!twoColorable){
+            //     return getInvalid(); 
+            // }
         }
         
-        return valid; 
+        return this.graph; 
     }
 
-    public void dfsColor(Vertex[] vertices, int vertexID, int color, int parent, boolean valid) {
-        vertices[vertexID].color = color; 
-        vertices[vertexID].parent = parent; 
+    public void dfsColor(int vertexID, int color, int parent) {
+        graph[vertexID].color = color; 
+        graph[vertexID].parent = parent; 
 
 
         // check if the coloring is valid with the adjacent nodes
@@ -84,19 +97,25 @@ public class Graph {
 
 
 
-        int[] adjacent = vertices[vertexID].getEdges();
+        int[] adjacent = graph[vertexID].getEdges();
         for(int i = 0; i < adjacent.length; i++) {
             // check first if there is a coloring for adjacent vertex that matches parent
             // this means the graph is NOT two colorable
-            if(vertices[adjacent[i]].color == vertices[vertexID].color) {
-                // invalidate valid and stop the traversal
-                System.out.println("BAD GRAPH FAILURE");
+            if(graph[adjacent[i]].color == graph[vertexID].color) {
+                // invalidate valid and stop the trav ersal
+
                 twoColorable = false; 
+
+                // return the graph substructure that is invalid
+                // this.invalidSubstructure = getSubstructure(vertexID, adjacent[i]);
+
+
                 break;
             }
             // if the vertex does not have coloring, color it opposite parent!
-            else if (vertices[adjacent[i]].color == -1) {
-                dfsColor(vertices, adjacent[i], Math.abs(color-1), vertexID, valid);
+            else if (graph[adjacent[i]].color == -1) {
+                System.out.println("Exploring vertex: " + adjacent[i] + " from parent: " + vertexID);
+                dfsColor(adjacent[i], Math.abs(color-1), vertexID);
             }
             // color is opposite
             else { 
@@ -105,9 +124,29 @@ public class Graph {
         }
     }
 
-    // // preform color-dfs on graph  
-    // public boolean dfs(Vertex[] vertices) {
-        
-    // }
+    // conflict vertex has root adjacent with same color, follow the parents to the root 
+    public Vertex[] getSubstructure(int conflict, int root) {
+        // Stores the Integer IDs for the path 
+        ArrayList<Integer> path = new ArrayList<Integer>();
+        int curr = conflict;
+        // add vertices from path to list
+        System.out.println("Root: " + root);
+        System.out.println("Conflict: " + conflict);
+        while(graph[curr].parent != root) {
+            System.out.println("Parent is: " + graph[curr].parent);
+            path.add(new Integer(curr)); 
+            curr = graph[curr].parent;
+        }
+        path.add(root);
+
+        // stores vertex substructure that proves a graph is not two colorable
+        Vertex[] substructure = new Vertex[(path.size())];
+
+        // populate the path with Vertex objects
+        for(int i = 0; i < substructure.length; i++) {
+            substructure[i] = graph[(int)(path.get(i))];
+        }
+        return substructure;
+    }
 
 }
