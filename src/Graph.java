@@ -8,11 +8,17 @@ import java.io.InputStreamReader;
 import java.lang.Math.*;
 import java.util.*;
 
+/**
+ *  Class wraps Vertex objects and calls routines to traverse and check two colorability
+ */ 
 public class Graph {
-    boolean twoColorable; 
     Vertex[] graph;
+
+    boolean twoColorable; 
+    
     // tracks the time so discovery and finish times can be determined
     int time; 
+
     int conflict_vert;
     int root_vert;
 
@@ -192,8 +198,6 @@ public class Graph {
         time += 1;
         graph[vertexID].finish_time = time;
     }
-
-
 
 
 

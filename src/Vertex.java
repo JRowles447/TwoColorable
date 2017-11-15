@@ -8,20 +8,43 @@ import java.io.InputStreamReader;
 import java.lang.Math.*;
 import java.util.*;
 
+
+/** 
+ * Class represents the Vertices in the Graph.
+ */ 
 public class Vertex { 
-	// id of the vertex
+	/**
+	 * The unique id of the vertex
+	 */
 	int id; 
-	// list of Integer ids to other vertices
+	/**
+	 * A list of Integers with the ids of the adjacent vertices
+	 */
 	ArrayList<Integer> edges; 
+	/**
+	 * int with value "0" for first color, "1" for second color, "-1" for no assignment
+	 */
 	int color; 
+	/**
+	 * Tracks whether the vertex has been visited in the depth first coloring
+	 */
 	boolean visited;
-	// previous vertex that produced this vertex in dfsColoring
-	int parent; 
+	/**
+	 * Time that the node was first visited (and colored) in the coloring routine in Graph.java. 
+	 */
 	int discover_time;
+	/**
+	 * Time that the node was finished being visited (i.e. the children of the vertex have all been traversed and colored) 
+	 */
 	int finish_time;	
 
+
 	/**
-	 * 
+	 * 	Creates a new Vertex object that contains state outlined in input and tracks additional state information when coloring
+	 *  the Graph. 
+	 *
+	 * 	@param 	id is the unique id of the Vertex object
+	 *	@param	edges is the list of adjacent vertices
 	 */
 	public Vertex(int id, ArrayList<Integer> edges) { 
 		this.id = id;
@@ -36,6 +59,7 @@ public class Vertex {
 		this.discover_time = -1; 
 		this.finish_time = -1;
 	}
+
 
 	/** 
 	 * Utility function for returning an array of ints from array of Integers with edge vertex ids. Useful for functions in
