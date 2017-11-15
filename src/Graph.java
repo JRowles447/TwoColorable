@@ -24,12 +24,8 @@ public class Graph {
 
         Vertex[] twoColored = vertices;
 
-
         Vertex[] result = this.dfs();
-        // for(int i = 1; i < twoColored.length; i++){
-        //     System.out.println(twoColored[i].color);
-        //     System.out.println("Vertex " + i + " discoved at time " + twoColored[i].discover_time + " finished at time " + twoColored[i].finish_time);
-        // }
+        
         System.out.println("Two Colorable: " + twoColorable);
         if (!twoColorable) {
             // swap the search order
@@ -39,9 +35,7 @@ public class Graph {
                 this.root_vert = temp;
             }
             this.invalidSubstructure = getSubstructure(this.conflict_vert, this.root_vert);
-            System.out.println(this.conflict_vert);
-            System.out.println(this.root_vert);
-            System.out.println();
+
             for(int i = 0; i < invalidSubstructure.length; i++){
                 System.out.println(invalidSubstructure[i].id);
             }
@@ -98,11 +92,9 @@ public class Graph {
         for(int i = 1; i < graph.length; i++) { 
             // if the vertex has not been colored, visit and dfs color
             if(twoColorable && graph[i].color == -1) {
-                // System.out.println("Searching from vertex: " + i);
                 dfsColor(i, 1, -1);
             }
         }
-        
         return this.graph; 
     }
 
@@ -115,13 +107,6 @@ public class Graph {
         graph[vertexID].parent = parent; 
         graph[vertexID].discover_time = time;
 
-
-        // check if the coloring is valid with the adjacent nodes
-        // boolean valid = checkValid(vertices, vertexID
-        // might not be good idea cause run time complexity
-
-
-
         int[] adjacent = graph[vertexID].getEdges();
         for(int i = 0; i < adjacent.length; i++) {
             // check first if there is a coloring for adjacent vertex that matches parent
@@ -131,7 +116,6 @@ public class Graph {
 
                 twoColorable = false; 
 
-                // time += 1;
                 graph[vertexID].finish_time = time;
 
                 // return the graph substructure that is invalid
@@ -142,17 +126,15 @@ public class Graph {
             }
             // if the vertex does not have coloring, color it opposite parent!
             else if (graph[adjacent[i]].color == -1) {
-                // System.out.println("Exploring vertex: " + adjacent[i] + " from parent: " + vertexID);
                 dfsColor(adjacent[i], Math.abs(color-1), vertexID);
             }
-            // color is opposite
+            // color is opposite (and correct)
             else { 
                 continue;
             }
         }
         time += 1;
         graph[vertexID].finish_time = time;
-
     }
 
 
@@ -171,8 +153,6 @@ public class Graph {
         int con_dis = graph[conflict].discover_time;
         int con_fin = graph[conflict].finish_time;
 
-        // length of the subcycle
-
         boolean finished = false;
         path.add(conflict);
 
@@ -180,28 +160,16 @@ public class Graph {
         int[] edges = graph[curr].getEdges();
 
         while(!finished) {
-            System.out.println("curr now is " + curr);
-
             for(int i = 0; i < edges.length; i++) {
-
                 Vertex adjacent = graph[edges[i]];
-                System.out.println(Arrays.toString(edges));
-                System.out.println("curr is: " + curr);
+
                 if(adjacent.id == this.root_vert && curr != conflict && graph[curr].discover_time > adjacent.discover_time) {
-                    System.out.println("Root is: " + this.root_vert + " conflict is: " + this.conflict_vert);
-                    System.out.println("curr is: " + curr + " conflict is " + conflict);
-                    System.out.println("adjacent is: " + adjacent.id);
-                    System.out.println("adj disc_time " + adjacent.discover_time + " curr disc_time " + graph[curr].discover_time);
                     finished = true;
                     break;
                 }
                 if(adjacent.discover_time < graph[curr].discover_time && root_dis < adjacent.discover_time && adjacent.discover_time < con_dis) {
                     if(adjacent.finish_time > con_fin && adjacent.finish_time < root_fin) {
-                        System.out.println("curr was " + curr);
                         curr = edges[i];
-
-                        System.out.println("adding vertex: " + edges[i] + " to cycle nodes");
-                        System.out.println("curr is " + curr);
                         edges = graph[curr].getEdges();
 
                         path.add(new Integer(adjacent.id));
