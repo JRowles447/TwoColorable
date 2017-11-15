@@ -20,33 +20,34 @@ public class Vertex {
 	int discover_time;
 	int finish_time;	
 
-
+	/**
+	 * 
+	 */
 	public Vertex(int id, ArrayList<Integer> edges) { 
 		this.id = id;
 		this.edges = new ArrayList<Integer>();
 		// initialize color to -1, i.e. vertex is uncolored
 		this.color = -1; 
+
 		// set visited to false
 		this.visited = false; 
-		this.parent = -1;
+
 		// set discover and finish times to -1 just in case the traversal is partial (because there is an odd cycle)
 		this.discover_time = -1; 
 		this.finish_time = -1;
 	}
 
-	// return the Integer array list casted to an array of ints
-	// used for easier processing
+	/** 
+	 * Utility function for returning an array of ints from array of Integers with edge vertex ids. Useful for functions in
+	 * Graph.java
+	 * 
+	 * @return 	int array with casted edges
+	 */
 	public int[] getEdges() {
 		int[] castedEdges = new int[edges.size()];
 		for(int i = 0; i < edges.size(); i++) {
 			castedEdges[i] = (int)(edges.get(i));
 		}
 		return castedEdges;
-	}
-
-	// add Integer edge to list of edges
-	public void addEdge(int edge) {
-		Integer newEdge = new Integer(edge);
-		this.edges.add(newEdge);
 	}
 }

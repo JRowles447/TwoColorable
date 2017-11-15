@@ -17,8 +17,18 @@ public class Graph {
     int root_vert;
 
 
-    public Graph(String filename, String outputFile) {
-        Vertex[] vertices = parse_file(filename);
+    /**
+     * Constructor for the Graph object, which initializes and organizes the problem, reading file and initializing vertices, 
+     * and calls dfs on the vertice. Returns an output file with either the assignment of colors to vertices or the invalid
+     * substructure of the graph. 
+     *
+     * @param   filename is the name of the input file containing the number of vertices and the undirected edges in the 
+     *          graph.
+     * @param   outputFile is the name of the output file to print the color assignment or invalid substructure for graph.
+     *
+     */
+    public Graph(String fileName, String outputFile) {
+        Vertex[] vertices = parse_file(fileName);
         twoColorable = true;
         graph = vertices;
 
@@ -76,14 +86,14 @@ public class Graph {
      * Parses an input file according to the prespecified format. The vertex array returned
      * is the representation of the graph from the input file.  
      *
-     * @param   filename  The name of the file to parse
+     * @param   fileName  The name of the file to parse
      * @return  A vertex array with initialized vertices and edges
      */
     // parse file and return an array of Vertex objects
-    public Vertex[] parse_file(String filename){
+    public Vertex[] parse_file(String fileName){
         Vertex[] vertices = null;
         try { 
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
             int num_vertices = Integer.parseInt(reader.readLine());
             vertices = new Vertex[num_vertices+1];
             // initialize vertices 1 -> num_vertices
