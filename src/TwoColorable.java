@@ -8,9 +8,10 @@
  */
 public class TwoColorable {
 
+	/**
+	 *	Pass in the name of the input file as the first argument and the name of the output file as the second argument
+	 */
     public static void main(String[] args) {
-        // arg[0] is input file with number of vertices and enumerated edges
-        // arg[1] is output file to print to 
         Graph graph = new Graph(args[0], args[1]);
     }
 }

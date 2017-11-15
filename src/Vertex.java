@@ -49,6 +49,7 @@ public class Vertex {
 	public Vertex(int id, ArrayList<Integer> edges) { 
 		this.id = id;
 		this.edges = new ArrayList<Integer>();
+		
 		// initialize color to -1, i.e. vertex is uncolored
 		this.color = -1; 
 

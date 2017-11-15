@@ -8,37 +8,55 @@ import java.io.InputStreamReader;
 import java.lang.Math.*;
 import java.util.*;
 
+
 /**
  *  Class wraps Vertex objects and calls routines to traverse and check two colorability
  */ 
 public class Graph {
+    /**
+     *  Vertex array that organizes and maintains the state of the vertices of the graph
+     */ 
     Vertex[] graph;
 
+    /**
+     *  Tracks the two colorability of the graph. Determines whether output to file is the color assignment to Vertex objects 
+     *  or the odd cycle in the graph
+     */ 
     boolean twoColorable; 
     
-    // tracks the time so discovery and finish times can be determined
+    /**
+     *  Tracks the time so discovery and finish times during the dfs and dfsColor routines so that Vertex traversal
+     *  ordering can be determined (used for reporting the odd cycle)
+     */
     int time; 
 
-    int conflict_vert;
+    /** 
+     *  The id of the Vertex object that the conflict_vert encountered during dfsColor() that had the same color
+     *  @see #conflict_vert
+     */
     int root_vert;
+
+    /** 
+     *  The id of the Vertex object that encountered an adjacent vertex with the same color during dfsColor()
+     *  @see #root_vert
+     */
+    int conflict_vert;
 
 
     /**
-     * Constructor for the Graph object, which initializes and organizes the problem, reading file and initializing vertices, 
-     * and calls dfs on the vertice. Returns an output file with either the assignment of colors to vertices or the invalid
-     * substructure of the graph. 
+     *  Constructor for the Graph object, which initializes and organizes the problem, reading file and initializing vertices, 
+     *  and calls dfs on the vertice. Returns an output file with either the assignment of colors to vertices or the invalid
+     *  substructure of the graph. 
      *
-     * @param   filename is the name of the input file containing the number of vertices and the undirected edges in the 
-     *          graph.
-     * @param   outputFile is the name of the output file to print the color assignment or invalid substructure for graph.
+     *  @param   filename is the name of the input file containing the number of vertices and the undirected edges in the 
+     *           graph.
+     *  @param   outputFile is the name of the output file to print the color assignment or invalid substructure for graph.
      *
      */
     public Graph(String fileName, String outputFile) {
         Vertex[] vertices = parse_file(fileName);
         twoColorable = true;
         graph = vertices;
-
-        Vertex[] twoColored = vertices;
 
         this.dfs(); 
 
@@ -61,7 +79,7 @@ public class Graph {
                     }
                 }
             }
-            // else write the cycle of vertices that invalidates 
+            // else write the vertex ids of the vertices in the odd cycle that invalidates 
             else {
                 // swap the search order
                 if(graph[this.conflict_vert].discover_time < graph[this.root_vert].discover_time) {
@@ -87,22 +105,20 @@ public class Graph {
     }
 
 
-
     /**
-     * Parses an input file according to the prespecified format. The vertex array returned
-     * is the representation of the graph from the input file.  
+     *  Parses an input file according to the prespecified format. The vertex array returned is the representation of the 
+     *  graph from the input file.  
      *
-     * @param   fileName  The name of the file to parse
-     * @return  A vertex array with initialized vertices and edges
+     *  @param   fileName  The name of the file to parse
+     *  @return  A vertex array with initialized vertices and edges
      */
-    // parse file and return an array of Vertex objects
     public Vertex[] parse_file(String fileName){
         Vertex[] vertices = null;
         try { 
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             int num_vertices = Integer.parseInt(reader.readLine());
             vertices = new Vertex[num_vertices+1];
-            // initialize vertices 1 -> num_vertices
+            // initialize vertices 1 -> num_vertices. Keep vertices[0] = null since there are no 0 vertices in input
             for(int i = 1; i <= num_vertices; i++) {
                 ArrayList<Integer> edge_list = new ArrayList<Integer>();
                 vertices[i] = new Vertex((i), edge_list);
@@ -129,8 +145,6 @@ public class Graph {
     }
 
 
-
-
     /**
      * Performs depth first search on the graph, calling dfsColor helper function to visit children in depth 
      * first search style. Returns a vertex array with vertices colored if the graph is two colorable, otherwise
@@ -143,15 +157,12 @@ public class Graph {
         time = 0;
         // iterate over the vertices one by one
         for(int i = 1; i < graph.length; i++) { 
-            // if the vertex has not been colored, visit and dfs color
+            // if the vertex has not been colored, visit and dfsColor() it 
             if(twoColorable && graph[i].color == -1) {
                 dfsColor(i, 1);
             }
         }
-        // return this.graph; 
     }
-
-
 
 
     /**
@@ -165,25 +176,23 @@ public class Graph {
      * @param   color is the int to make the vertex with 
      */
     public void dfsColor(int vertexID, int color) {
-        time +=1;
+        time += 1;
         graph[vertexID].color = color; 
         graph[vertexID].discover_time = time;
 
         int[] adjacent = graph[vertexID].getEdges();
         for(int i = 0; i < adjacent.length; i++) {
-            // check first if there is a coloring for adjacent vertex that matches parent
-            // this means the graph is NOT two colorable
+            // check first if there is a coloring for adjacent vertex that matches vertex you are currently evaluating adjacent
+            // vertices from 
             if(graph[adjacent[i]].color == graph[vertexID].color) {
-                // invalidate valid and stop the trav ersal
-
+                // invalidate valid and stop the traversal
                 twoColorable = false; 
 
                 graph[vertexID].finish_time = time;
 
-                // return the graph substructure that is invalid
+                // set the conflict_vert and root_vert to recover the odd cycle later
                 this.conflict_vert = vertexID;
                 this.root_vert = adjacent[i];
-
                 break;
             }
             // if the vertex does not have coloring, color it opposite parent!
@@ -205,35 +214,42 @@ public class Graph {
      * Uses the conflict and root vertices from the graph to return the invalid substructure of the graph (i.e. the odd 
      * cycle). Works backwards using the discovery and finish times of vertices. 
      *
-     * @param   conflict is the id of the vertex that was being colored/ checked in dfsColor routine that was adjacent to a vertex
-     *          of the same color. 
+     * @param   conflict is the id of the vertex that was being colored/ checked in dfsColor routine that was adjacent to a 
+     *          vertex of the same color. 
      * @param   root is the id of the vertex adjacent to and the same color as conflict
-     * @reutrn  Return the Vertex array with ordering for the vertices in forward order of exploration from the "root" of the cycle
+     * @reutrn  Return the Vertex array with ordering for the vertices in forward order of exploration from the "root" of 
+     *          the cycle
      */ 
     public Vertex[] getSubstructure(int conflict, int root) {
         // Stores the Integer IDs for the path 
         ArrayList<Integer> path = new ArrayList<Integer>();
         int curr = conflict;
 
+        // Times that are used for determining whether or not a vertex in the adjacency list is part of the odd cycle
         int root_dis = graph[root].discover_time;
         int root_fin = graph[root].finish_time;
         int con_dis = graph[conflict].discover_time;
         int con_fin = graph[conflict].finish_time;
 
+        // Tracks if we have reached the root (traversing backwards through the cycle)
         boolean finished = false;
+
+        // First, add the last Vertex of the cycle to the path.
         path.add(conflict);
 
-        // add check for the last vertex connected to conflict
         int[] edges = graph[curr].getEdges();
 
+        // Determine the Vertex objects in the odd cycle
         while(!finished) {
             for(int i = 0; i < edges.length; i++) {
                 Vertex adjacent = graph[edges[i]];
 
+                // check if we have reached the root via the backtracking route 
                 if(adjacent.id == this.root_vert && curr != conflict && graph[curr].discover_time > adjacent.discover_time) {
                     finished = true;
                     break;
                 }
+                // Vertex objects in the odd cycle will meet these two sets of conditions
                 if(adjacent.discover_time < graph[curr].discover_time && root_dis < adjacent.discover_time && adjacent.discover_time < con_dis) {
                     if(adjacent.finish_time > con_fin && adjacent.finish_time < root_fin) {
                         curr = edges[i];
@@ -246,6 +262,7 @@ public class Graph {
             }
         }
 
+        // Lastly, add the root to the path
         path.add(root);
 
         // stores vertex substructure that proves a graph is not two colorable
