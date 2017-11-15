@@ -17,6 +17,8 @@ public class Vertex {
 	boolean visited;
 	// previous vertex that produced this vertex in dfsColoring
 	int parent; 
+	int discover_time;
+	int finish_time;	
 
 
 	public Vertex(int id, ArrayList<Integer> edges) { 
@@ -27,6 +29,9 @@ public class Vertex {
 		// set visited to false
 		this.visited = false; 
 		this.parent = -1;
+		// set discover and finish times to -1 just in case the traversal is partial (because there is an odd cycle)
+		this.discover_time = -1; 
+		this.finish_time = -1;
 	}
 
 	// return the Integer array list casted to an array of ints
