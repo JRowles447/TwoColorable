@@ -37,12 +37,12 @@ Corresponds to the following graph:
   4
 ```
 
-## Sample Output
-The following is produced when running TwoColorable on `inputs/smallgraph`:
+## Sample Outputs
+The following is produced when running TwoColorable on `inputs/smallgraph`, a Two Colorable graph:
 ```
 > java TwoColorable ../inputs/smallgraph ../outputs/smallgraphoutput
 
-> more smallgraphoutput
+> more ../outputs/smallgraphoutput
 Two Colorable: true
 1: black
 2: red
@@ -55,4 +55,16 @@ Two Colorable: true
 9: black
 10: red
 
-> ```
+>
+```
+
+The following is produced when TwoColorable is run on `inputs/smallinvalid`, a graph that is not Two Colorable:
+```
+> java TwoColorable ../inputs/smallinvalid ../outputs/invalidout
+
+> more ../outputs/invalidout
+Two Colorable: false
+7, 6, 8
+
+>
+```
