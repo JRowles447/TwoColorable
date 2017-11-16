@@ -1,5 +1,5 @@
 # TwoColorable
----
+
 Checks whether a given undirected graph is Two Colorable. Two Colorable entails that each vertices is assigned one of two colors and that no adjacent vertices have the same color. Assigned through my Algorithms course, where we were limited in tools available for our implementation. If the graph meets the Two Colorable requirements, an assignment of colors for each vertex in the graph is returned. If the graph fails to meet the requirements, then the substructure that does not meet the requirements is returned. This substructure will be an odd cycle in the graph. Implemented using depth first traversal for exploration of the graph.
 
 ## Running TwoColorable
