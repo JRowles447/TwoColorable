@@ -1,6 +1,19 @@
 # TwoColorable
 Checks whether a given undirected graph is Two Colorable. Two Colorable entails that each vertices is assigned one of two colors and that no adjacent vertices have the same color. Assigned through my Algorithms course, where we were limited in tools available for our implementation. If the graph meets the Two Colorable requirements, an assignment of colors for each vertex in the graph is returned. If the graph fails to meet the requirements, then the substructure that does not meet the requirements is returned. This substructure will be an odd cycle in the graph. Implemented using depth first traversal for exploration of the graph.
 
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [TwoColorable](#twocolorable)
+	- [Implementation Details](#implementation-details)
+	- [Dependencies](#dependencies)
+	- [Running TwoColorable](#running-twocolorable)
+	- [Input File format](#input-file-format)
+	- [Sample Outputs](#sample-outputs)
+		- [Two Colorable Graph](#two-colorable-graph)
+		- [Not Two Colorable Graph](#not-two-colorable-graph)
+
+<!-- /TOC -->
+
 ## Implementation Details
 The project uses a Vertex class that tracks information from the input file and information gathered during the depth first traversal of the graph (e.g. color, discovery time, etc). The Graph object contains the collection of Vertex objects and manages the traversal and file writing. First, the input file is parsed using the parse_file() function. During  parse_file(), the file is traversed line-by-line and each pair of vertices is added to the vertices Vertex[] at the appropriate location (vertices has mapping directly to each Vertex (i.e. Vertex with id = 1 is stored at vertices[1]) (vertices[0] is empty)).
 
@@ -50,6 +63,7 @@ Corresponds to the following graph:
 ```
 
 ## Sample Outputs
+### Two Colorable Graph
 The following is produced when running TwoColorable on `inputs/smallgraph`, a Two Colorable graph:
 ```
 > java TwoColorable ../inputs/small_graph ../outputs/small_graph_out
@@ -70,6 +84,7 @@ Two Colorable: true
 >
 ```
 
+### Not Two Colorable Graph
 The following is produced when TwoColorable is run on `inputs/small_invalid`, a graph that is not Two Colorable:
 ```
 > java TwoColorable ../inputs/small_invalid ../outputs/small_invalid_out
