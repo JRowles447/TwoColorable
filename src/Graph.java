@@ -55,6 +55,7 @@ public class Graph {
      */
     public Graph(String fileName, String outputFile) {
         Vertex[] vertices = parse_file(fileName);
+        
         twoColorable = true;
         graph = vertices;
 
