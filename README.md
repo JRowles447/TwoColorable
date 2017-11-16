@@ -9,12 +9,12 @@ Compile the project with the following command:
 `javac ./src/* -d ./build`
 
 Run `TwoColorable` from the `build` folder of the project directory using the following command:   
-`java TwoColorable ../inputs/smallgraph ../outputs/smallgraphout`
+`java TwoColorable ../inputs/small_graph ../outputs/small_graph_out`
 
 The first argument is the input file with a graph following the format specified in <!-- TODO add link --> Input Format. The second input is the file to write the output to.
 
-For graphs of larger size (`largegraph1` and `largegraph2`), use this command:   
-`java -Xss14M TwoColorable ../inputs/largegraph2 ../outputs/largegraph2out`
+For graphs of larger size (`large_graph_1` and `large_graph_2`), use this command:   
+`java -Xss14M TwoColorable ../inputs/large_graph_2 ../outputs/large_graph_2_out`
 This increases the stack size for the program (necessary for the deep levels of recursion for a large number of vertices).
 
 ## Input File format
@@ -40,9 +40,9 @@ Corresponds to the following graph:
 ## Sample Outputs
 The following is produced when running TwoColorable on `inputs/smallgraph`, a Two Colorable graph:
 ```
-> java TwoColorable ../inputs/smallgraph ../outputs/smallgraphoutput
+> java TwoColorable ../inputs/small_graph ../outputs/small_graph_out
 
-> more ../outputs/smallgraphoutput
+> more ../outputs/small_graph_out
 Two Colorable: true
 1: black
 2: red
@@ -58,11 +58,11 @@ Two Colorable: true
 >
 ```
 
-The following is produced when TwoColorable is run on `inputs/smallinvalid`, a graph that is not Two Colorable:
+The following is produced when TwoColorable is run on `inputs/small_invalid`, a graph that is not Two Colorable:
 ```
-> java TwoColorable ../inputs/smallinvalid ../outputs/invalidout
+> java TwoColorable ../inputs/small_invalid ../outputs/small_invalid_out
 
-> more ../outputs/invalidout
+> more ../outputs/small_invalid_out
 Two Colorable: false
 7, 6, 8
 
